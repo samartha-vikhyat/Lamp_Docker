@@ -1,0 +1,38 @@
+version: "3.3"
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: vikhyat
+      MYSQL_PASSWORD: password
+#    volumes:
+#      - "./db:/docker-entrypoint-initdb.d"
+    networks:
+      - lamp-docker
+  apache:
+    depends_on:
+      - db
+    image: php:8.1.1-apache
+    volumes:
+      - "./php/:/var/www/html:z"
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - lamp-docker
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8000:80
+    environment:
+      - PMA_HOST = db 
+      - PMA_PORT = 3306
+    networks:
+      - lamp-docker
+networks:
+  lamp-docker:
+    driver: bridge
