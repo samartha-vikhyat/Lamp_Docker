@@ -1,0 +1,44 @@
+version: '3.3'
+services:
+    web-server:
+        build: .
+        volumes:
+          - ./ssl_certs/mycert.crt:/etc/ssl/certs/mycert.crt       # ---> Location for ssl certificate
+          - ./ssl_certs/mycert.key:/etc/ssl/private/mycert.key     # ---> Location for ssl certificate
+          - ./html/cehp:/var/www/html                              # ---> Location for application files
+        ports:
+          - 80:80
+          - 443:443
+        networks:
+          - cehp
+    mysql-server:
+        image: mysql:5.7
+        restart: always
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: cehp
+          MYSQL_USER: vikhyat
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        volumes:
+          - /root/cehp_project/mysql/dump:/docker-entrypoint-initdb.d:Z
+        networks:
+          - cehp
+    phpmyadmin:
+        image: phpmyadmin:latest
+        restart: always
+        environment:
+          - PMA_HOST=mysql-server
+          - PMA_PORT=3306
+          - UPLOAD_LIMIT=1024M              # ---> This is to increase the upload limit of .sql file 
+          - MAX_EXECUTION_TIME=300
+          - MEMORY_LIMIT=1024M
+        ports:
+          - "8000:80"
+        networks:
+          - cehp
+
+networks:
+  cehp:
+    driver: bridge
