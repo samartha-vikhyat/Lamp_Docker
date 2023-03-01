@@ -10,9 +10,12 @@ RUN a2enmod rewrite && a2enmod ssl && a2enmod socache_shmcb
 #
 # SSLCertificateFile      /etc/ssl/certs/mycert.crt
 # SSLCertificateKeyFile /etc/ssl/private/mycert.key
+
 RUN sed -i '/SSLCertificateFile.*snakeoil\.pem/c\SSLCertificateFile \/etc\/ssl\/certs\/mycert.crt' /etc/apache2/sites-available/default-ssl.conf && sed -i '/SSLCertificateKeyFile.*snakeoil\.key/cSSLCertificateKeyFile /etc/ssl/private/mycert.key\' /etc/apache2/sites-available/default-ssl.conf
 
 # To enable the SSL-enabled site with a2ensite default-ssl 
 RUN a2ensite default-ssl
 
 RUN apt-get update && apt-get upgrade -y
+
+# More details on https://forums.docker.com/t/setup-local-domain-and-ssl-for-php-apache-container/116015
